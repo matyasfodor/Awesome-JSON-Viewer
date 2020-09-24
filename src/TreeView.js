@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 var $ = require('jquery');
-var jQuery = $;
+// var jQuery = $;
 import { initPlugin } from './utils/json-viewer/jquery.json-viewer.js';
 import './utils/json-viewer/jquery.json-viewer.css';
+
+import jsonpath from 'jsonpath';
+
+const safeCopy = (object) => Array.isArray(object) ? [...object] : {...object};
 
 class TreeView extends Component {
     constructor(props) {
@@ -13,10 +16,11 @@ class TreeView extends Component {
             showCopier: false,
             actualPath: null,
             value: null,
-            data: props.data,
+            data: safeCopy(props.data),
         };
         this.changeCopyIconLocation = this.changeCopyIconLocation.bind(this);
         this.toggleSection = this.toggleSection.bind(this);
+        this.changeJSONPath = this.changeJSONPath.bind(this);
     }
 
     copy(event, type) {
@@ -120,17 +124,64 @@ class TreeView extends Component {
             target.after('<a href class="json-placeholder">' + placeholder + '</a>');
         }
     }
+
+    changeJSONPath(e) {
+        const query = e.target.value;
+        if (!query) {
+            this.setState({data: this.props.data});
+            return;
+        }
+        // console.log(e.target.value);
+        try {
+            const filtered = jsonpath.query(this.props.data, e.target.value);
+            this.setState({data: filtered});
+            console.log('success');
+        } catch(err) {
+            console.log(err);
+        }
+        
+    }
     
     componentDidMount() {
-        window.json = this.props.data;
+        this.initPlugin(this.props.data);
+        // window.json = this.props.data;
+        // this.$node = $(this.refs.jsonRenderer);
+
+        // if ($) {
+        //     const pluginOptions = {
+        //         collapsed: false,
+        //         withQuotes: true
+        //     };
+        //     initPlugin(this.$node, $, this.props.data, pluginOptions);
+        //     $(document).on("click", "span.property", this.changeCopyIconLocation);
+        //     $(document).on("click", "a.json-toggle", this.toggleSection);
+
+        //   setTimeout(() => {
+        //         if ((window.extensionOptions || {}).collapsed == true) {
+        //         $.each($('a.json-toggle'), function (index, item) {
+        //             if (index > 0) {
+        //                 $(item).trigger('click');
+        //             }
+        //         });
+        //     }
+        //   }, 1000);
+        // }
+    }
+
+    initPlugin(data) {
+        window.json = data;
         this.$node = $(this.refs.jsonRenderer);
 
         if ($) {
+            // Remove previous event listeners
+            $(document).off("click", "span.property", this.changeCopyIconLocation);
+            $(document).off("click", "a.json-toggle", this.toggleSection);
+
             const pluginOptions = {
                 collapsed: false,
                 withQuotes: true
             };
-            initPlugin(this.$node, $, this.props.data, pluginOptions);
+            initPlugin(this.$node, $, data, pluginOptions);
             $(document).on("click", "span.property", this.changeCopyIconLocation);
             $(document).on("click", "a.json-toggle", this.toggleSection);
 
@@ -152,8 +203,15 @@ class TreeView extends Component {
     }
 
     render() {
-        window.json = this.props.data;
+        window.json = this.state.data;
+        // console.log('asdsdf');
+        this.initPlugin(this.state.data);
         return (
+            <React.Fragment>
+            <div>
+                <label for="query">JSON path:</label>
+                <input name="query" onChange={this.changeJSONPath}></input>
+            </div>
             <div>
                 <a className="copier" style={{ top: this.state.top, display: this.state.showCopier ? 'block' : 'none' }}>
                     <ul className="copyMenu">
@@ -164,6 +222,7 @@ class TreeView extends Component {
                 <pre ref="jsonRenderer" id="json-rb">
                 </pre>
             </div>
+            </React.Fragment>
         );
     }
 }
