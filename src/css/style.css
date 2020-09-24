@@ -255,6 +255,10 @@ textarea:focus {
     margin-left: 1em;
 }
 
+.json-path-error-msg {
+  color: #DE1509;
+}
+
 .json-input-error-msg{
     color:#fff;
     padding:20px;

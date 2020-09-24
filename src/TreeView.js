@@ -16,6 +16,7 @@ class TreeView extends Component {
             actualPath: null,
             value: null,
             data: safeCopy(props.data),
+            error: null,
         };
         this.changeCopyIconLocation = this.changeCopyIconLocation.bind(this);
         this.toggleSection = this.toggleSection.bind(this);
@@ -127,15 +128,16 @@ class TreeView extends Component {
     changeJSONPath(e) {
         const query = e.target.value;
         if (!query) {
-            this.setState({data: this.props.data});
+            this.setState({data: this.props.data, error: null});
             return;
         }
         try {
             const filtered = jsonpath.query(this.props.data, e.target.value);
-            this.setState({data: filtered});
-            console.log('success');
-        } catch(err) {
-            console.log(err);
+            this.setState({data: filtered, error: null});
+        } catch(error) {
+            this.setState({
+                error: error.message,
+            })
         }
         
     }
@@ -184,6 +186,7 @@ class TreeView extends Component {
                 <label for="query">JSON path: </label>
                 <input name="query" onChange={this.changeJSONPath}></input>
             </div>
+            {this.state.error && (<div className="json-path-error-msg"><pre>{this.state.error}</pre></div>)}
             <div>
                 <a className="copier" style={{ top: this.state.top, display: this.state.showCopier ? 'block' : 'none' }}>
                     <ul className="copyMenu">
