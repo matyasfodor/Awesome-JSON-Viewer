@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './css/style.css';
+import CheatSheet from './CheatSheet';
 
 const OPTION_ICON_PATH = '/images/icons/gear.png';
 const LIVE_EXTENSION_ID = 'iemadiahhbebdklepanmkjenfdebfpfe';
@@ -89,6 +90,7 @@ class Menus extends Component {
                         </a>
                     </li>
                 </ul>
+                {this.state.selectedPan === 'tree' && <CheatSheet/>}
             </div>
         );
     }

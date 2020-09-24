@@ -11,6 +11,11 @@ ___
 
 [![](https://raw.githubusercontent.com/rbrahul/Smart-Webpage-Ruler/master/images/chrome.png)](https://chrome.google.com/webstore/detail/awesome-json/iemadiahhbebdklepanmkjenfdebfpfe)
 
+## TODO
+ * ✅ Link / cheat sheet for JSONpath syntax
+ * ✅ Error message display
+ * [ ] (React-based JSON visualizer ?)
+ * [ ] Autocomplete for fields
 
 ## Features
 

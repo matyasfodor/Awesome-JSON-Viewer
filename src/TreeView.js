@@ -17,6 +17,7 @@ class TreeView extends Component {
             value: null,
             data: safeCopy(props.data),
             error: null,
+            suggestions: null,
         };
         this.changeCopyIconLocation = this.changeCopyIconLocation.bind(this);
         this.toggleSection = this.toggleSection.bind(this);
@@ -125,15 +126,27 @@ class TreeView extends Component {
         }
     }
 
+    getSuggestions(data) {
+        // Temporarily disable autosuggest
+        return null;
+        if(!data) {
+            return null;
+        }
+        if (Array.isArray(data)) {
+            return Object.keys(data[0]);
+        }
+        return Object.keys(data);
+    }
+
     changeJSONPath(e) {
         const query = e.target.value;
         if (!query) {
-            this.setState({data: this.props.data, error: null});
+            this.setState({data: this.props.data, error: null, suggestions: this.getSuggestions(this.props.data)});
             return;
         }
         try {
             const filtered = jsonpath.query(this.props.data, e.target.value);
-            this.setState({data: filtered, error: null});
+            this.setState({data: filtered, error: null, suggestions: this.getSuggestions(filtered)});
         } catch(error) {
             this.setState({
                 error: error.message,
@@ -184,7 +197,12 @@ class TreeView extends Component {
             <React.Fragment>
             <div>
                 <label for="query">JSON path: </label>
-                <input name="query" onChange={this.changeJSONPath}></input>
+                <input name="query" list="query-suggestions" autocomplete="off" onChange={this.changeJSONPath}></input>
+                {this.state.suggestions &&(<datalist id="query-suggestions">
+                    {this.state.suggestions.map((suggestion) => {
+                        return (<option id={suggestion} value={suggestion}>{suggestion}</option>)
+                    })}
+                </datalist>)}
             </div>
             {this.state.error && (<div className="json-path-error-msg"><pre>{this.state.error}</pre></div>)}
             <div>
