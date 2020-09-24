@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 var $ = require('jquery');
-// var jQuery = $;
 import { initPlugin } from './utils/json-viewer/jquery.json-viewer.js';
 import './utils/json-viewer/jquery.json-viewer.css';
 
@@ -131,7 +130,6 @@ class TreeView extends Component {
             this.setState({data: this.props.data});
             return;
         }
-        // console.log(e.target.value);
         try {
             const filtered = jsonpath.query(this.props.data, e.target.value);
             this.setState({data: filtered});
@@ -144,34 +142,10 @@ class TreeView extends Component {
     
     componentDidMount() {
         this.initPlugin(this.props.data);
-        // window.json = this.props.data;
-        // this.$node = $(this.refs.jsonRenderer);
-
-        // if ($) {
-        //     const pluginOptions = {
-        //         collapsed: false,
-        //         withQuotes: true
-        //     };
-        //     initPlugin(this.$node, $, this.props.data, pluginOptions);
-        //     $(document).on("click", "span.property", this.changeCopyIconLocation);
-        //     $(document).on("click", "a.json-toggle", this.toggleSection);
-
-        //   setTimeout(() => {
-        //         if ((window.extensionOptions || {}).collapsed == true) {
-        //         $.each($('a.json-toggle'), function (index, item) {
-        //             if (index > 0) {
-        //                 $(item).trigger('click');
-        //             }
-        //         });
-        //     }
-        //   }, 1000);
-        // }
     }
 
     initPlugin(data) {
-        window.json = data;
         this.$node = $(this.refs.jsonRenderer);
-
         if ($) {
             // Remove previous event listeners
             $(document).off("click", "span.property", this.changeCopyIconLocation);
@@ -203,13 +177,11 @@ class TreeView extends Component {
     }
 
     render() {
-        window.json = this.state.data;
-        // console.log('asdsdf');
         this.initPlugin(this.state.data);
         return (
             <React.Fragment>
             <div>
-                <label for="query">JSON path:</label>
+                <label for="query">JSON path: </label>
                 <input name="query" onChange={this.changeJSONPath}></input>
             </div>
             <div>
